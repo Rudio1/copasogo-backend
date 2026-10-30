@@ -1,0 +1,47 @@
+---
+description: Arquitetura Clean Architecture, camadas e dependencias do Copasogo
+alwaysApply: true
+---
+
+# Arquitetura
+
+## Padrao
+
+Clean Architecture com CQRS leve. O dominio e soberano; infraestrutura e detalhe de implementacao.
+
+## Camadas e responsabilidades
+
+| Camada | Projeto | Responsabilidade |
+|---|---|---|
+| API | `Copasogo.WebApi` | HTTP, controllers, middleware |
+| Application | `Copasogo.Application` | Orquestracao de casos de uso |
+| Domain | `Copasogo.Domain` | Regras de negocio, entidades, contratos |
+| Data | `Copasogo.Infra.Data` | EF Core, repositorios, migrations |
+| Jobs | `Copasogo.Infra.Jobs` | Tarefas em background |
+| Jobs host | `Copasogo.Jobs.Web` | Host dos jobs |
+| Resources | `Copasogo.Resources` | Mensagens e recursos localizados |
+
+## Dependencias permitidas
+
+```
+WebApi → Application, Infra.Data
+Jobs.Web → Infra.Jobs, Application, Infra.Data
+Infra.Jobs → Application, Infra.Data
+Application → Domain
+Infra.Data → Application, Domain
+```
+
+**Proibido:** `Domain` referenciar Application, Infra ou WebApi.
+
+Integracoes HTTP externas, quando existirem, ficam em `Infra.ExternalApis` — nao criar esse projeto ate haver necessidade real.
+
+## Fluxo obrigatorio
+
+```
+Controller → Application (Handler/Service) → Domain Service → Repository → Database
+```
+
+- Controller nunca chama Repository, DbContext ou Domain Service diretamente.
+- Application **nunca** injeta `I*Repository` — apenas Domain Services e `IUnitOfWork`.
+- Application nunca contem regra de negocio.
+- **Domain Service** concentra regras de negocio e e o unico que chama repositorios.

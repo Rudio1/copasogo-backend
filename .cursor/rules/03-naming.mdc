@@ -1,0 +1,38 @@
+---
+description: Convencoes de nomenclatura de classes, interfaces e arquivos
+globs: src/**/*.cs
+alwaysApply: false
+---
+
+# Nomenclatura
+
+## Padrao
+
+`{Acao}{Entidade}{Tipo}` — sufixo indica o papel.
+
+| Tipo | Exemplo |
+|---|---|
+| Domain Service | `PartidaDomainService` |
+| Repository | `DuplaRepository` |
+| Command | `RegistrarResultadoCommand` |
+| Query | `ObterChaveQuery` |
+| Handler | `RegistrarResultadoHandler` |
+| Validator | `RegistrarResultadoValidator` |
+| Request/Response | `RegistrarResultadoRequest`, `PartidaResponse` |
+| Configuration (EF) | `DuplaConfiguration` |
+
+## Proibido
+
+```
+❌ ServiceDupla, RepositoryDupla
+❌ Helper, Util, Manager (generico)
+❌ MatchHelper, StringUtils
+```
+
+## Interfaces
+
+Prefixo `I` + mesmo nome da implementacao: `IDuplaRepository` → `DuplaRepository`.
+
+## Pastas e namespaces
+
+Codigo em **portugues** para termos do campeonato (`Torneio`, `Dupla`, `Partida`, `Chave`). Namespaces seguem o contexto: `Copasogo.Application.Partidas.Commands`.

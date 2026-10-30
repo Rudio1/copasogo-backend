@@ -1,0 +1,34 @@
+---
+description: Eventos de dominio — quando usar e como disparar integracoes
+globs: src/Domain/**
+alwaysApply: false
+---
+
+# Eventos de Dominio
+
+## Quando usar
+
+- Algo relevante aconteceu no dominio e **outros contextos** precisam reagir.
+- Exemplos: `PartidaEncerrada`, `DuplaEliminada`, `CampeaoDefinido`.
+
+## Quando NAO usar
+
+- Logica que cabe na propria Entity ou DomainService.
+- Integracao simples dentro do mesmo caso de uso (chamar direto no Handler).
+
+## Padrao
+
+Registrar em `AggregateRoot` via `Raise(IDomainEvent)`. Colecao em `DomainEvents`.
+
+## Disparo
+
+1. Entity registra evento internamente.
+2. Handler persiste e, **apos SaveChanges**, publica eventos.
+3. Application ou Infra.Jobs executa integracoes (notificacao, fila).
+
+## Proibido
+
+```
+❌ Entity chama HttpClient, envia email ou publica em fila
+❌ Integracao externa dentro do metodo de dominio
+```

@@ -1,0 +1,44 @@
+---
+description: Formato unico de respostas da API — sucesso, erro e paginacao
+globs: src/WebApi/**
+alwaysApply: false
+---
+
+# Respostas da API
+
+## Envelope padrao
+
+```csharp
+public sealed record ApiResponse<T>(bool Success, T? Data, ApiError? Error);
+public sealed record ApiError(string Code, string Message, IReadOnlyList<FieldError>? Fields = null);
+```
+
+## Sucesso (200/201)
+
+```json
+{ "success": true, "data": { "id": "..." }, "error": null }
+```
+
+## Erro de validacao (400)
+
+`VALIDATION_ERROR` com `fields`.
+
+## Erro de negocio (422)
+
+`BUSINESS_ERROR` com mensagem de dominio.
+
+## Nao encontrado (404)
+
+`NOT_FOUND`.
+
+## Paginacao
+
+```json
+{
+  "success": true,
+  "data": { "items": [], "page": 1, "pageSize": 20, "totalCount": 0 },
+  "error": null
+}
+```
+
+Middleware global mapeia excecoes (`11-exceptions.mdc`) para este formato. Controllers usam `OkResponse` / `FromResult` de `ApiControllerBase`.

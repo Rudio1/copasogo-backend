@@ -1,0 +1,41 @@
+---
+description: Convencoes EF Migrations — nomenclatura, frequencia e organizacao
+globs: src/Infra.Data/Migrations/**
+alwaysApply: false
+---
+
+# Migrations
+
+## Quando criar
+
+- Uma migration por **feature/contexto** concluido, nao por arquivo solto.
+- Criar apos entidade + configuration + DbSet estarem prontos.
+
+## Nomenclatura
+
+```
+{Timestamp}_{Context}_{Action}
+```
+
+Exemplos:
+- `20261029180000_Torneio_AddTorneiosTable`
+- `20261030120000_Partidas_AddResultado`
+
+## Comandos
+
+```bash
+dotnet ef migrations add Torneio_AddTorneiosTable \
+  --project src/Infra.Data \
+  --startup-project src/WebApi
+
+dotnet ef database update \
+  --project src/Infra.Data \
+  --startup-project src/WebApi
+```
+
+## Regras
+
+- **Nunca** editar migration ja aplicada em producao — criar nova migration.
+- Revisar SQL gerado antes de commitar.
+- Migrations ficam em `Infra.Data/Migrations/`.
+- `AppDbContext` permanece limpo; schema vem das `IEntityTypeConfiguration`.

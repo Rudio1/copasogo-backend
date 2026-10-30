@@ -1,0 +1,41 @@
+---
+description: FluentValidation para entrada; regra de negocio no Domain
+globs: src/**/*Validator*.cs
+alwaysApply: false
+---
+
+# Validacao
+
+## Separacao obrigatoria
+
+| Tipo | Onde | Exemplo |
+|---|---|---|
+| Validacao de entrada | FluentValidation | campo obrigatorio, formato, tamanho |
+| Regra de negocio | Domain | partida ja encerrada, bye invalido |
+
+## FluentValidation
+
+Um validator por Command/Request, colocado junto ao caso de uso.
+
+```csharp
+public sealed class RegistrarResultadoValidator : AbstractValidator<RegistrarResultadoCommand>
+{
+    public RegistrarResultadoValidator()
+    {
+        RuleFor(x => x.PartidaId).NotEmpty();
+        RuleFor(x => x.Placar).NotEmpty().MaximumLength(16);
+    }
+}
+```
+
+## Validacao de negocio
+
+```csharp
+partida.RegistrarResultado(placar);
+```
+
+Validator **nao** consulta repositorio nem aplica regra de chave.
+
+## Invocacao
+
+Validator e chamado no **Handler** antes de qualquer operacao de dominio ou persistencia.

@@ -1,0 +1,43 @@
+---
+description: Repositories — apenas acesso a dados, sem regra de negocio
+globs: src/**/*Repository*.cs
+alwaysApply: false
+---
+
+# Repositories
+
+## Responsabilidade
+
+Repository **apenas acessa dados**. Nada mais.
+
+## O que o Repository faz
+
+- `GetById`, `List`, `Add`, `Update`, `Remove`
+- Queries com filtros, paginacao e projecoes
+- `AsNoTracking()` em leituras
+
+## O que o Repository NUNCA faz
+
+```
+❌ Calcular classificacao com regra de negocio
+❌ Validar se a partida pode ser encerrada
+❌ Decidir vencedor, bye ou avanco na chave
+❌ Chamar servicos externos
+```
+
+## Organizacao
+
+```
+Domain/{Context}/Repositories/Interfaces/IPartidaRepository.cs
+Domain/{Context}/Services/Interfaces/IPartidaDomainService.cs
+Domain/Generic/Repositories/Interfaces/IRepository.cs, IUnitOfWork.cs
+Infra.Data/{Context}/Repositories/PartidaRepository.cs
+```
+
+- Interface no **Domain**; implementacao no **Infra.Data**.
+- Sempre receber `CancellationToken`.
+- Retornar **entidades de dominio**, nunca DTOs.
+
+## Transacoes
+
+`SaveChanges` fica no `IUnitOfWork`, chamado pelo **Handler** apos o Domain Service executar a operacao.

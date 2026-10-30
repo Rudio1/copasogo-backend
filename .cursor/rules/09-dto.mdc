@@ -1,0 +1,45 @@
+---
+description: DTOs — Request/Response, nunca expor ou receber Entity
+globs: src/**/*{Request,Response,Dto}*.cs
+alwaysApply: false
+---
+
+# DTOs
+
+## Regra principal
+
+**Nunca** retornar Entity. **Nunca** receber Entity. Sempre DTO.
+
+## Tipos
+
+| Direcao | Tipo | Exemplo |
+|---|---|---|
+| Entrada API | Request | `RegistrarResultadoRequest` |
+| Saida API | Response | `PartidaResponse` |
+| Lista paginada | wrapper | `PagedResponse<DuplaResponse>` |
+| Interno Application | Command/Query | `RegistrarResultadoCommand` |
+
+## Organizacao
+
+```
+WebApi/Contracts/Partidas/RegistrarResultadoRequest.cs
+Application/Partidas/Commands/RegistrarResultado/RegistrarResultadoCommand.cs
+```
+
+Ou Responses em `Application/{Context}/DataTransfer/Response/` se compartilhados.
+
+## Mapeamento
+
+```csharp
+public sealed record PartidaResponse(Guid Id, string Status)
+{
+    public static PartidaResponse From(Partida partida) =>
+        new(partida.Id, partida.Status.ToString());
+}
+```
+
+## Proibido
+
+- Entity como parametro ou retorno de endpoint
+- DTO com logica de negocio
+- DTO referenciando tipos de EF ou infraestrutura

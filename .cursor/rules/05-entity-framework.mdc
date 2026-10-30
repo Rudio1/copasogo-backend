@@ -1,0 +1,39 @@
+---
+description: Padroes Entity Framework Core — configuracoes, queries e performance
+globs: src/Infra.Data/**
+alwaysApply: false
+---
+
+# Entity Framework
+
+## Configuracao
+
+- Sempre `IEntityTypeConfiguration<T>` em `Infra.Data/{Context}/Mappings/`.
+- **Nunca** configurar entidades dentro do `AppDbContext`.
+- **Nunca** colocar regra de negocio nas configuracoes.
+
+## DbContext
+
+`AppDbContext` apenas registra `DbSet` e chama `ApplyConfigurationsFromAssembly`. Sem logica de negocio.
+
+## Queries
+
+```csharp
+await context.Set<Partida>()
+    .AsNoTracking()
+    .Where(p => p.TorneioId == torneioId)
+    .ToListAsync(cancellationToken);
+```
+
+## Obrigatorio
+
+- `CancellationToken` em todo metodo async de repositorio/query.
+- Carregamento **explicit** ou **projection** — nunca Lazy Loading.
+- Projecoes (`Select`) em vez de carregar entidade completa para leitura.
+
+## Proibido
+
+- Regra de negocio em `OnModelCreating`, configurations ou repositorios.
+- `Include` em cadeia sem necessidade (risco de N+1).
+
+Ver tambem: `06-repositories.mdc`, `14-performance.mdc`, `20-migrations.mdc`.

@@ -1,0 +1,47 @@
+---
+description: Controllers finos — apenas HTTP, sem logica de negocio
+globs: src/WebApi/**
+alwaysApply: false
+---
+
+# WebApi / Controllers
+
+## Responsabilidade
+
+Controller **apenas** traduz HTTP para Application e devolve resposta.
+
+## Fluxo obrigatorio
+
+```
+Request → validar model state → chamar Handler → retornar Response
+```
+
+```csharp
+[ApiController]
+[Route("api/partidas")]
+public sealed class PartidasController(IRegistrarResultadoHandler handler) : ApiControllerBase
+{
+    [HttpPost("{id:guid}/resultado")]
+    public async Task<IActionResult> RegistrarResultado(
+        Guid id,
+        [FromBody] RegistrarResultadoRequest request,
+        CancellationToken ct)
+    {
+        var result = await handler.HandleAsync(new RegistrarResultadoCommand(id, request.Placar), ct);
+        return OkResponse(result);
+    }
+}
+```
+
+## O que Controller NUNCA faz
+
+```
+❌ Regra de negocio
+❌ Acesso a DbContext ou Repository
+❌ try/catch generico que engole excecao
+❌ Retornar Entity diretamente
+```
+
+Herdar de `ApiControllerBase`. Organizar em `WebApi/Controllers/{Context}/`.
+
+Ver tambem: `09-dto.mdc`, `15-security.mdc`, `22-api-responses.mdc`.

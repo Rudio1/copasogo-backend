@@ -1,0 +1,49 @@
+---
+description: Camada Application — orquestracao sem regra de negocio
+globs: src/Application/**
+alwaysApply: false
+---
+
+# Application
+
+## Responsabilidade
+
+Application **apenas orquestra** casos de uso. Coordena Domain Services e `IUnitOfWork`.
+
+## Fluxo
+
+```
+Handler recebe Command/Query
+  → valida entrada (FluentValidation)
+  → chama Domain Service (regras + repositorios)
+  → SaveChanges via IUnitOfWork
+  → mapeia Entity → Response/DTO
+```
+
+## O que Application faz
+
+- Implementar handlers
+- Mapear Command/Query → chamadas de Domain Service
+- Mapear Entity → Response
+- Commit transacional via `IUnitOfWork`
+
+## O que Application NUNCA faz
+
+```
+❌ Injetar ou chamar I*Repository diretamente
+❌ if (partida.EstaEmpatada) partida.Desempatar()
+❌ Acessar DbContext diretamente
+❌ Retornar Entity para o Controller
+```
+
+## Organizacao
+
+```
+Application/Partidas/Commands/RegistrarResultado/
+  RegistrarResultadoCommand.cs
+  IRegistrarResultadoHandler.cs
+  RegistrarResultadoHandler.cs
+  RegistrarResultadoValidator.cs
+```
+
+Ver tambem: `17-use-cases.mdc`, `10-validation.mdc`.

@@ -1,0 +1,36 @@
+---
+description: Seguranca — input, secrets, stack trace e queries parametrizadas
+globs: src/WebApi/**
+alwaysApply: false
+---
+
+# Seguranca
+
+## Input
+
+- **Nunca confiar** em dados do cliente — validar sempre.
+- Usar FluentValidation + tipos fortes (Value Objects no Domain).
+
+## Secrets
+
+```
+❌ Senha, API key ou connection string no codigo ou appsettings commitado
+✅ User Secrets (dev), variaveis de ambiente ou vault (prod)
+```
+
+`appsettings.Development.json` esta no `.gitignore`.
+
+## Respostas de erro
+
+- **Nunca** retornar stack trace ao cliente.
+- Mensagens genericas para erros internos (500).
+
+## Banco de dados
+
+- EF Core ja parametriza — **nunca** concatenar SQL manual.
+- Se usar SQL raw: sempre parametros nomeados.
+
+## Autenticacao
+
+- Endpoints protegidos com `[Authorize]` quando o contexto exigir.
+- Validar usuario no Handler, nao so no controller.

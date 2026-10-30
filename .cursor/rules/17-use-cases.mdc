@@ -1,0 +1,62 @@
+---
+description: Padrao de casos de uso com handlers manuais (sem MediatR)
+globs: src/Application/**
+alwaysApply: false
+---
+
+# Casos de Uso (Handlers Manuais)
+
+## Estrutura por operacao
+
+Cada caso de uso e uma pasta com 4 arquivos:
+
+```
+Application/Partidas/Commands/RegistrarResultado/
+  RegistrarResultadoCommand.cs
+  IRegistrarResultadoHandler.cs
+  RegistrarResultadoHandler.cs
+  RegistrarResultadoValidator.cs
+```
+
+## Contratos
+
+```csharp
+public sealed record RegistrarResultadoCommand(Guid PartidaId, string Placar);
+
+public interface IRegistrarResultadoHandler
+{
+    Task<PartidaResponse> HandleAsync(RegistrarResultadoCommand command, CancellationToken ct);
+}
+```
+
+## Handler
+
+Handler injeta **Domain Service** + `IUnitOfWork` + validator. **Nunca** `I*Repository`.
+
+```csharp
+public sealed class RegistrarResultadoHandler(
+    IPartidaDomainService partidaDomainService,
+    IUnitOfWork unitOfWork,
+    RegistrarResultadoValidator validator) : IRegistrarResultadoHandler
+{
+    public async Task<PartidaResponse> HandleAsync(RegistrarResultadoCommand command, CancellationToken ct)
+    {
+        await validator.ValidateAndThrowAsync(command, ct);
+        var partida = await partidaDomainService.RegistrarResultadoAsync(command.PartidaId, command.Placar, ct);
+        await unitOfWork.SaveChangesAsync(ct);
+        return PartidaResponse.From(partida);
+    }
+}
+```
+
+## Registro DI
+
+Registrar cada handler em `Application/DependencyInjection/DependencyInjection.cs`:
+
+```csharp
+services.AddScoped<IRegistrarResultadoHandler, RegistrarResultadoHandler>();
+```
+
+## Queries
+
+Mesmo padrao: `ObterChaveQuery` + `IObterChaveHandler` + `ObterChaveHandler`.

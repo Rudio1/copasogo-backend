@@ -1,0 +1,23 @@
+---
+description: Soft delete, auditoria e controle de concorrencia
+globs: src/Domain/**,src/Infra.Data/**
+alwaysApply: false
+---
+
+# Auditoria e Soft Delete
+
+## Campos padrao (Entity base)
+
+Ja existem em `Entity`: `CreatedAt`, `UpdatedAt`, `CreatedBy`, `UpdatedBy`, `IsDeleted`, `DeletedAt`, `DeletedBy`.
+
+Adicionar `RowVersion` (`byte[]`) em entidades criticas (partida, chave).
+
+## Soft Delete
+
+`Entity.Delete()` marca `IsDeleted`. `Repository.Remove` chama `Delete`, nao `DELETE` fisico.
+
+Filtro global em `ApplySoftDeleteFilters`. Exclusao fisica apenas em casos excepcionais e documentados.
+
+## Auditoria automatica
+
+`AppDbContext.SaveChangesAsync` preenche `CreatedAt`/`UpdatedAt`/`CreatedBy`/`UpdatedBy`.

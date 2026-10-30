@@ -1,0 +1,33 @@
+---
+description: Hierarquia de excecoes — Business, Validation, NotFound, Unauthorized
+globs: src/**/*Exception*.cs
+alwaysApply: false
+---
+
+# Exceptions
+
+## Hierarquia
+
+```
+Exception
+  └── DomainException (base do dominio)
+        ├── BusinessException      → regra de negocio violada
+        ├── ValidationException    → entrada invalida
+        ├── NotFoundException      → recurso nao encontrado
+        └── UnauthorizedException  → acesso negado
+```
+
+## Uso por camada
+
+| Excecao | Lancada em | HTTP Status |
+|---|---|---|
+| `BusinessException` | Domain | 422 Unprocessable Entity |
+| `ValidationException` | Application/Validator | 400 Bad Request |
+| `NotFoundException` | Handler (recurso ausente) | 404 Not Found |
+| `UnauthorizedException` | Application/Auth | 401/403 |
+
+## Regras
+
+- Mensagens claras e em portugues para o usuario final.
+- **Nunca** expor stack trace na resposta HTTP.
+- Middleware global traduz excecoes para `ApiResponse` (ver `22-api-responses.mdc`).

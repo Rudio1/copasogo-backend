@@ -1,0 +1,44 @@
+---
+description: Value Objects — encapsular validacao e igualdade por valor
+globs: src/Domain/**
+alwaysApply: false
+---
+
+# Value Objects
+
+## Quando criar
+
+Valor com regras proprias, comparado por valor (nao identidade):
+
+- `Email`, `Placar`, `Slug`, `Nick`
+
+## Base
+
+Herdar de `Copasogo.Domain.Generic.ValueObjects.ValueObject` e implementar `GetEqualityComponents()`.
+
+```csharp
+public sealed class Nick : ValueObject
+{
+    public string Value { get; }
+
+    private Nick(string value) => Value = value;
+
+    public static Nick Create(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            throw new BusinessException("Nick e obrigatorio.");
+        return new Nick(value.Trim());
+    }
+
+    protected override IEnumerable<object?> GetEqualityComponents()
+    {
+        yield return Value;
+    }
+}
+```
+
+## Regras
+
+- Imutaveis apos criacao (sem setters publicos).
+- Validacao no factory `Create()` — nunca construtor publico permissivo.
+- Colocar em `Domain/{Context}/ValueObjects/` ou `Domain/Generic/ValueObjects/`.

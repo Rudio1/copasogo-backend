@@ -1,0 +1,28 @@
+---
+description: Performance — paginacao, projecoes, CancellationToken, evitar N+1
+globs: src/Infra.Data/**,src/Application/**
+alwaysApply: false
+---
+
+# Performance
+
+## Listagens
+
+- **Sempre paginacao** em endpoints que retornam colecoes (exceto chave completa, que e um agregado pequeno e fechado).
+- Parametros padrao: `page` (1-based), `pageSize` (max 100).
+- Retornar `totalCount` para o cliente paginar.
+
+## Queries
+
+- `AsNoTracking()` em leituras.
+- `Select` / projecao em vez de carregar entidade inteira para listagem.
+- `CancellationToken` em todo metodo async.
+
+## Evitar N+1
+
+Nunca loop com query individual por item. Usar `Include` com criterio ou uma query com projecao.
+
+## Commands
+
+- Carregar apenas entidades necessarias para o caso de uso.
+- `SaveChanges` uma vez por transacao, no final do Handler.

@@ -1,0 +1,88 @@
+---
+description: Organizacao feature-first por contexto (Torneio, Duplas, Partidas...)
+alwaysApply: true
+---
+
+# Estrutura de Pastas por Contexto
+
+## Regra principal
+
+Organizar por **contexto de negocio** em todas as camadas. Nunca por tipo tecnico na raiz.
+
+```
+❌ Application/Services/, Application/Commands/ (na raiz)
+✅ Application/Torneio/Commands/, Application/Duplas/Services/
+```
+
+## Contexto `Generic` (cross-cutting)
+
+Codigo **nao especifico de um contexto de negocio** fica em `Generic/`.
+
+| Camada | Pasta | Conteudo |
+|---|---|---|
+| Domain | `Generic/Entities/` | `Entity`, `AggregateRoot`, `IEntity`, eventos |
+| Domain | `Generic/ValueObjects/` | `ValueObject` |
+| Domain | `Generic/Validations/` | excecoes, `DomainMessages` |
+| Domain | `Generic/Repositories/Interfaces/` | `IRepository`, `IUnitOfWork` |
+| Application | `Generic/` | `Result`, `ApplicationMessages` |
+| Application | `Generic/Services/Interfaces/` | `ICurrentUserContext` |
+| Infra.Data | `Generic/Repositories/` | `Repository<T>` base |
+| WebApi | `Controllers/Generic/` | `ApiControllerBase` |
+
+**Regra:** se o codigo pertence a um unico contexto, ele fica no contexto — **nao** em `Generic`.
+
+## Domain — `{Context}/`
+
+```
+{Context}/
+  Entities/
+  Enums/
+  ValueObjects/
+  Services/
+    Interfaces/          ← I*DomainService
+    *DomainService.cs
+  Repositories/
+    Interfaces/          ← I*Repository
+```
+
+## Application — `{Context}/`
+
+```
+{Context}/
+  Commands/{UseCase}/
+  Queries/{UseCase}/
+  DataTransfer/Request|Response/
+  Services/Interfaces/
+  Validators/
+```
+
+## Infra.Data — `{Context}/`
+
+```
+{Context}/
+  Mappings/              ← IEntityTypeConfiguration
+  Repositories/          ← implementacao de I*Repository
+```
+
+## WebApi
+
+```
+Controllers/{Context}/
+Controllers/Generic/
+Infrastructure/
+Middleware/
+```
+
+## Contextos
+
+`Generic`, `Auth`, `Torneio`, `Jogadores`, `Duplas`, `Partidas`.
+
+A chave double elimination nao tem pasta `Chave`: o grafo fica em `Domain/Torneio/ChaveFabrica` e a progressao em `Domain/Partidas/ProgressaoChave`. Transmissao (Twitch) continua no site, fora desta API.
+
+Nao criar pasta de contexto vazia. Criar quando a primeira entidade/caso de uso existir.
+
+## Regras
+
+- Tudo de um contexto fica junto; **nunca misturar contextos na mesma pasta**.
+- Application **nao** define `I*Repository`; apenas consome domain services.
+- Alteracoes nas rules devem ser registradas em `.cursor/rules/CHANGELOG.md`.

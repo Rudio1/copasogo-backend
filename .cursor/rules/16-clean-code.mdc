@@ -1,0 +1,36 @@
+---
+description: Codigo limpo — metodos pequenos, SRP, sem Util/Helper
+globs: src/**/*.cs
+alwaysApply: false
+---
+
+# Codigo Limpo
+
+## Metodos
+
+- Pequenos, uma responsabilidade.
+- Se passar de ~20 linhas, extrair metodo privado ou classe.
+- Nomes que descrevem intencao: `AvancarVencedor`, nao `Process`.
+
+## Classes
+
+- Uma responsabilidade por classe (SRP).
+- Preferir composicao a heranca profunda.
+
+## Proibido
+
+```
+❌ Helper, Util, Manager (genericos)
+❌ Classes estaticas com regra de negocio
+❌ Metodos estaticos que decidem fluxo de dominio
+❌ Comentarios que repetem o codigo
+```
+
+## Comentarios
+
+- Apenas para logica nao obvia ou decisao de negocio complexa.
+
+## Consistencia
+
+- Seguir `03-naming.mdc` e `02-folder-structure.mdc`.
+- Reutilizar abstracoes existentes antes de criar novas.

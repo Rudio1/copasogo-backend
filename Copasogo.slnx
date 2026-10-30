@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Application/Copasogo.Application.csproj" />
+    <Project Path="src/Domain/Copasogo.Domain.csproj" />
+    <Project Path="src/Infra.Data/Copasogo.Infra.Data.csproj" />
+    <Project Path="src/Infra.Jobs/Copasogo.Infra.Jobs.csproj" />
+    <Project Path="src/Jobs.Web/Copasogo.Jobs.Web.csproj" />
+    <Project Path="src/Resources/Copasogo.Resources.csproj" />
+    <Project Path="src/WebApi/Copasogo.WebApi.csproj" />
+  </Folder>
+</Solution>

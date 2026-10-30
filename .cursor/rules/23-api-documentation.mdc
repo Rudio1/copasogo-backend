@@ -1,0 +1,29 @@
+---
+description: Manter api-contract/ sincronizado com rotas da API
+globs: src/WebApi/Controllers/**, src/Application/**/Commands/**, src/Application/**/DataTransfer/**
+alwaysApply: false
+---
+
+# Documentacao API (api-contract/)
+
+## Regra principal
+
+Ao **criar, alterar ou remover** qualquer rota, DTO, response ou validador da API, atualizar a documentacao em `api-contract/`.
+
+## O que atualizar
+
+| Mudanca no codigo | Arquivo em api-contract/ |
+|---|---|
+| Envelope, CORS, auth | `README.md` |
+| Novo contexto | `{contexto}.md` |
+| Enums | `enums.md` |
+| Erros | `errors.md` |
+| Qualquer alteracao | `CHANGELOG.md` |
+
+## Checklist
+
+- Rota documentada com finalidade, auth, request e response
+- Campos obrigatorios vs opcionais
+- Exemplos JSON
+- Enums como string
+- Entrada em `api-contract/` (e em `.cursor/rules/CHANGELOG.md` se a rule mudou)

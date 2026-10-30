@@ -1,0 +1,18 @@
+---
+description: Dominio e regras de negocio ficam no backend — FE nao reimplementa
+alwaysApply: true
+---
+
+# Regras de negocio no Domain
+
+## Principio
+
+O **Domain/Application** deste backend e a fonte da verdade para chave double elimination, resultado de partida, avanco de vencedor/perdedor, desempate e classificacao.
+
+Se o frontend precisar de um comportamento novo (ex.: calcular proxima partida apos um resultado), **implemente aqui** e exponha via API + `api-contract/`. Nao espere que o FE "complete" a regra.
+
+O frontend Copasogo (Next.js) e vitrine e consumo. Ele nao decide vencedor, nao monta a chave oficial e nao valida regulamento.
+
+## Contrato
+
+Alteracoes de payload/resposta: atualizar `api-contract/` no mesmo PR.

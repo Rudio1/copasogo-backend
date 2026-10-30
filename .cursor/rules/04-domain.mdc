@@ -1,0 +1,45 @@
+---
+description: Regras do dominio — entidades soberanas, domain services e proibicoes
+globs: src/Domain/**
+alwaysApply: false
+---
+
+# Domain
+
+## Principio
+
+O dominio e soberano. **Toda regra de negocio** vive aqui — nunca em Controller, Repository, Application ou EF.
+
+## Onde colocar regras
+
+| Situacao | Local |
+|---|---|
+| Regra de uma entidade | Metodo na Entity |
+| Regra entre entidades ou com persistencia | `{Context}DomainService` em `Services/` |
+| Contrato de domain service | `I{Context}DomainService` em `Services/Interfaces/` |
+| Contrato de persistencia | `I{Entity}Repository` em `Repositories/Interfaces/` |
+| Chamada a repositorio | **Somente** dentro de Domain Service |
+
+## Entities
+
+Entidades **apenas**: validam, alteram estado, executam comportamento.
+
+```csharp
+partida.RegistrarResultado(placar);
+dupla.Eliminar();
+```
+
+## Proibido nas Entities
+
+- Acesso a banco, repository, Http, cache, filesystem
+- Dependencias de frameworks (EF, ASP.NET)
+- DTOs ou tipos de Application/WebApi
+
+## Domain Services
+
+Usar quando a regra envolve **mais de uma entidade**, **consulta/persistencia via repositorio**, ou nao cabe na Entity.
+
+- Domain Service e o **unico** consumidor de `I*Repository` no sistema.
+- Application e Infra **nao** injetam repositorios (exceto implementacoes em `Infra.Data`).
+
+Ver tambem: `18-domain-events.mdc`, `19-value-objects.mdc`, `21-audit-soft-delete.mdc`.

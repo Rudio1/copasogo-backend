@@ -1,0 +1,35 @@
+---
+description: Quando logar, quando nao logar, nunca engolir excecoes
+globs: src/WebApi/**,src/Application/**
+alwaysApply: false
+---
+
+# Logging
+
+## Quando logar
+
+- Excecoes nao tratadas (Error + stack no log interno)
+- Falhas em integracoes externas
+- Jobs em background que falharam
+- Operacoes criticas: autenticacao, registro de resultado, avancos na chave
+
+## Quando NAO logar
+
+- Dados sensiveis: senhas, tokens
+- Stack trace na **resposta** ao cliente
+- Fluxo normal de leitura/escrita bem-sucedida
+
+## Niveis
+
+| Nivel | Uso |
+|---|---|
+| Error | Excecao, falha de integracao |
+| Warning | Retry, dado inesperado mas recuperavel |
+| Information | Eventos de negocio relevantes |
+| Debug | Apenas em desenvolvimento |
+
+## Regras
+
+- Nunca engolir excecao com `catch` vazio ou `return BadRequest()` sem log.
+- Structured logging (`{PropertyName}`).
+- Middleware global captura excecoes e loga uma vez.
