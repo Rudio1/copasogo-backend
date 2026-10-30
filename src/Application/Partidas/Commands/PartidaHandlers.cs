@@ -107,6 +107,40 @@ public sealed class RegistrarResultadoHandler(
     }
 }
 
+public sealed record CorrigirPlacarCommand(Guid TorneioId, int Numero, int ScoreA, int ScoreB);
+
+public interface ICorrigirPlacarHandler
+{
+    Task<PartidaResponse> HandleAsync(CorrigirPlacarCommand command, CancellationToken cancellationToken = default);
+}
+
+public sealed class CorrigirPlacarValidator : AbstractValidator<CorrigirPlacarCommand>
+{
+    public CorrigirPlacarValidator()
+    {
+        RuleFor(command => command.TorneioId).NotEmpty();
+        RuleFor(command => command.Numero).InclusiveBetween(1, 31);
+        RuleFor(command => command.ScoreA).GreaterThanOrEqualTo(0);
+        RuleFor(command => command.ScoreB).GreaterThanOrEqualTo(0);
+    }
+}
+
+public sealed class CorrigirPlacarHandler(
+    IPartidaDomainService partidas,
+    ITorneioRepository torneios,
+    IUnitOfWork unitOfWork,
+    IValidator<CorrigirPlacarCommand> validator) : ICorrigirPlacarHandler
+{
+    public async Task<PartidaResponse> HandleAsync(CorrigirPlacarCommand command, CancellationToken cancellationToken = default)
+    {
+        await validator.ValidateAndThrowAsync(command, cancellationToken);
+        var quantidade = await PartidaResposta.Quantidade(torneios, command.TorneioId, cancellationToken);
+        var partida = await partidas.CorrigirPlacarAsync(command.TorneioId, command.Numero, command.ScoreA, command.ScoreB, cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+        return PartidaResponse.From(partida, quantidade);
+    }
+}
+
 public interface ICancelarPartidaHandler
 {
     Task<PartidaResponse> HandleAsync(Guid torneioId, int numero, CancellationToken cancellationToken = default);

@@ -53,6 +53,7 @@ public static class DependencyInjection
         services.AddScoped<IAgendarPartidaHandler, AgendarPartidaHandler>();
         services.AddScoped<IMarcarAoVivoHandler, MarcarAoVivoHandler>();
         services.AddScoped<IRegistrarResultadoHandler, RegistrarResultadoHandler>();
+        services.AddScoped<ICorrigirPlacarHandler, CorrigirPlacarHandler>();
         services.AddScoped<ICancelarPartidaHandler, CancelarPartidaHandler>();
 
         return services;

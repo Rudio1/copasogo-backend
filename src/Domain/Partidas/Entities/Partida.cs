@@ -106,6 +106,18 @@ public sealed class Partida : AggregateRoot
         MarkAsUpdated();
     }
 
+    public void CorrigirPlacar(int placarA, int placarB)
+    {
+        if (Status != StatusPartida.Completed || VencedorDuplaId is null)
+        {
+            throw new BusinessException(string.Format(DomainMessages.Partida.PlacarSoEncerrada, Numero));
+        }
+
+        PlacarA = placarA;
+        PlacarB = placarB;
+        MarkAsUpdated();
+    }
+
     public void Cancelar()
     {
         if (Status == StatusPartida.Completed)

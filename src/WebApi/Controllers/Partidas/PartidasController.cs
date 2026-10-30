@@ -13,6 +13,7 @@ public sealed class PartidasController(
     IAgendarPartidaHandler agendar,
     IMarcarAoVivoHandler aoVivo,
     IRegistrarResultadoHandler resultado,
+    ICorrigirPlacarHandler placar,
     ICancelarPartidaHandler cancelar) : ApiControllerBase
 {
     [HttpGet]
@@ -39,6 +40,11 @@ public sealed class PartidasController(
         OkResponse(await resultado.HandleAsync(
             new RegistrarResultadoCommand(torneioId, numero, body.WinnerTeamId, body.Score?.A, body.Score?.B),
             cancellationToken));
+
+    [Authorize(Roles = AuthRoles.Administrador)]
+    [HttpPost("{numero:int}/placar")]
+    public async Task<IActionResult> Placar(Guid torneioId, int numero, [FromBody] ScoreBody body, CancellationToken cancellationToken) =>
+        OkResponse(await placar.HandleAsync(new CorrigirPlacarCommand(torneioId, numero, body.A, body.B), cancellationToken));
 
     [Authorize(Roles = AuthRoles.Administrador)]
     [HttpPost("{numero:int}/cancelar")]

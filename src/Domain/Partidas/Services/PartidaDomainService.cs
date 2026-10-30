@@ -75,6 +75,27 @@ public sealed class PartidaDomainService(
         return jogo;
     }
 
+    public async Task<Partida> CorrigirPlacarAsync(Guid torneioId, int numero, int placarA, int placarB, CancellationToken cancellationToken = default)
+    {
+        await GarantirTorneioAsync(torneioId, editavel: true, cancellationToken);
+        var (jogos, times) = await CarregarAsync(torneioId, cancellationToken);
+        var jogo = ObterJogo(jogos, numero);
+        if (jogo.VencedorDuplaId is null)
+        {
+            throw new BusinessException(string.Format(DomainMessages.Partida.PlacarSoEncerrada, numero));
+        }
+
+        var (a, b) = ProgressaoChave.Participantes(jogo, jogos, times);
+        if (a is null || b is null || (jogo.VencedorDuplaId != a.Id && jogo.VencedorDuplaId != b.Id))
+        {
+            throw new BusinessException(DomainMessages.Partida.DuplaNaoJoga);
+        }
+
+        ProgressaoChave.ValidarPlacar(placarA, placarB, jogo.VencedorDuplaId == a.Id, numero);
+        jogo.CorrigirPlacar(placarA, placarB);
+        return jogo;
+    }
+
     public async Task<Partida> CancelarAsync(Guid torneioId, int numero, CancellationToken cancellationToken = default)
     {
         await GarantirTorneioAsync(torneioId, editavel: true, cancellationToken);
