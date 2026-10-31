@@ -67,4 +67,4 @@ JWT. Sem body. Nao cancela jogo `completed`.
 
 Constantes: final dos vencedores 15, final dos perdedores 29, grande final 30, reset 31.
 
-Jogos 1–8 sao seeds. 9–15 recebem `winner_of` da chave de vencedores. 16–19 recebem `loser_of` de 1–8. O restante segue o grafo double elimination do site (perdedor das quartas/semi/final dos vencedores desce). 30 e 31 tem os dois lados `winner_of` 15 e `winner_of` 29.
+Jogos 1–8 sao seeds. 9–15 recebem `winner_of` da chave de vencedores. 16–19 recebem `loser_of` de 1–8. 20–23 recebem o perdedor das quartas em ordem invertida: 20 ← 12, 21 ← 11, 22 ← 10, 23 ← 9. O restante segue o grafo double elimination do site (perdedor das quartas/semi/final dos vencedores desce). 30 e 31 tem os dois lados `winner_of` 15 e `winner_of` 29.

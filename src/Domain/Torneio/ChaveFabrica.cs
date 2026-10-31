@@ -139,7 +139,10 @@ public static class ChaveFabrica
                 for (var indice = 0; indice < queda.Length; indice++)
                 {
                     encontro[indice] = numero++;
-                    slots[encontro[indice]] = (SlotSpec.Winner(perdedores[indice]), SlotSpec.Loser(queda[indice]));
+                    // A primeira queda entra invertida (com 16 duplas: 12→20, 11→21, 10→22, 9→23)
+                    // para que duplas da mesma metade da abertura não se reencontrem logo.
+                    var origem = rodada == 1 ? queda[queda.Length - 1 - indice] : queda[indice];
+                    slots[encontro[indice]] = (SlotSpec.Winner(perdedores[indice]), SlotSpec.Loser(origem));
                 }
 
                 if (ultima)
