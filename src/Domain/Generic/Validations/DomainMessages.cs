@@ -67,6 +67,7 @@ public static class DomainMessages
         public const string PlacarSoEncerrada = "O placar do jogo {0} so pode ser corrigido quando a partida estiver encerrada.";
         public const string SoUpcomingAoVivo = "O jogo {0} so pode ficar ao vivo quando as duas duplas estao definidas.";
         public const string EncerradaNaoCancela = "Partida encerrada nao pode ser cancelada.";
+        public const string SoCanceladaReabre = "O jogo {0} so pode ser reaberto quando estiver cancelado.";
         public const string DuplaComMaisDeDuasDerrotas = "A dupla tem mais de duas derrotas.";
     }
 }

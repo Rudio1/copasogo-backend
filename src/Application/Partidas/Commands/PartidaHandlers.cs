@@ -157,6 +157,22 @@ public sealed class CancelarPartidaHandler(IPartidaDomainService partidas, ITorn
     }
 }
 
+public interface IReabrirPartidaHandler
+{
+    Task<PartidaResponse> HandleAsync(Guid torneioId, int numero, CancellationToken cancellationToken = default);
+}
+
+public sealed class ReabrirPartidaHandler(IPartidaDomainService partidas, ITorneioRepository torneios, IUnitOfWork unitOfWork) : IReabrirPartidaHandler
+{
+    public async Task<PartidaResponse> HandleAsync(Guid torneioId, int numero, CancellationToken cancellationToken = default)
+    {
+        var quantidade = await PartidaResposta.Quantidade(torneios, torneioId, cancellationToken);
+        var partida = await partidas.ReabrirAsync(torneioId, numero, cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+        return PartidaResponse.From(partida, quantidade);
+    }
+}
+
 file static class PartidaResposta
 {
     public static async Task<int> Quantidade(ITorneioRepository torneios, Guid torneioId, CancellationToken cancellationToken)

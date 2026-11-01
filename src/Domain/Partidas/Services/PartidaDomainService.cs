@@ -106,6 +106,16 @@ public sealed class PartidaDomainService(
         return jogo;
     }
 
+    public async Task<Partida> ReabrirAsync(Guid torneioId, int numero, CancellationToken cancellationToken = default)
+    {
+        await GarantirTorneioAsync(torneioId, editavel: true, cancellationToken);
+        var (jogos, times) = await CarregarAsync(torneioId, cancellationToken);
+        var jogo = ObterJogo(jogos, numero);
+        jogo.Reabrir();
+        ProgressaoChave.Sincronizar(jogos, times);
+        return jogo;
+    }
+
     private async Task GarantirTorneioAsync(Guid torneioId, bool editavel, CancellationToken cancellationToken)
     {
         var torneio = await torneios.GetByIdAsync(torneioId, cancellationToken)

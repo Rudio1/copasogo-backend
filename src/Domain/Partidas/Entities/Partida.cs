@@ -129,6 +129,18 @@ public sealed class Partida : AggregateRoot
         MarkAsUpdated();
     }
 
+    // Desfaz um cancelamento. O status volta a ser calculado pela chave na sincronizacao.
+    public void Reabrir()
+    {
+        if (Status != StatusPartida.Cancelled)
+        {
+            throw new BusinessException(string.Format(DomainMessages.Partida.SoCanceladaReabre, Numero));
+        }
+
+        Status = StatusPartida.Pending;
+        MarkAsUpdated();
+    }
+
     public void AplicarStatusCalculado(StatusPartida status)
     {
         if (Status is StatusPartida.Completed or StatusPartida.Live or StatusPartida.Cancelled)

@@ -14,7 +14,8 @@ public sealed class PartidasController(
     IMarcarAoVivoHandler aoVivo,
     IRegistrarResultadoHandler resultado,
     ICorrigirPlacarHandler placar,
-    ICancelarPartidaHandler cancelar) : ApiControllerBase
+    ICancelarPartidaHandler cancelar,
+    IReabrirPartidaHandler reabrir) : ApiControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> Listar(Guid torneioId, [FromQuery] string? roundId, [FromQuery] string? status, [FromQuery] string? side, CancellationToken cancellationToken) =>
@@ -50,6 +51,11 @@ public sealed class PartidasController(
     [HttpPost("{numero:int}/cancelar")]
     public async Task<IActionResult> Cancelar(Guid torneioId, int numero, CancellationToken cancellationToken) =>
         OkResponse(await cancelar.HandleAsync(torneioId, numero, cancellationToken));
+
+    [Authorize(Roles = AuthRoles.Administrador)]
+    [HttpPost("{numero:int}/reabrir")]
+    public async Task<IActionResult> Reabrir(Guid torneioId, int numero, CancellationToken cancellationToken) =>
+        OkResponse(await reabrir.HandleAsync(torneioId, numero, cancellationToken));
 
     public sealed record AgendarBody(DateTime? ScheduledAt);
     public sealed record ScoreBody(int A, int B);

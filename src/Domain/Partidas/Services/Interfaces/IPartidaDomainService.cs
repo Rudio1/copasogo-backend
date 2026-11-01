@@ -11,4 +11,5 @@ public interface IPartidaDomainService
     Task<Partida> RegistrarResultadoAsync(Guid torneioId, int numero, Guid vencedorDuplaId, int? placarA, int? placarB, CancellationToken cancellationToken = default);
     Task<Partida> CorrigirPlacarAsync(Guid torneioId, int numero, int placarA, int placarB, CancellationToken cancellationToken = default);
     Task<Partida> CancelarAsync(Guid torneioId, int numero, CancellationToken cancellationToken = default);
+    Task<Partida> ReabrirAsync(Guid torneioId, int numero, CancellationToken cancellationToken = default);
 }

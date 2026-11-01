@@ -63,6 +63,10 @@ JWT. So em `upcoming` ou `live`. `winnerTeamId` tem de ser um dos participantes 
 
 JWT. Sem body. Nao cancela jogo `completed`.
 
+## POST .../{numero}/reabrir
+
+JWT. Sem body. Desfaz o cancelamento: so aceita jogo `cancelled`. O status volta a ser calculado pela chave (`upcoming` se as duas duplas estao definidas, senao `pending`). O reset (31) volta a `cancelled` se a grande final ja dispensou o jogo.
+
 ## Regras da chave
 
 Constantes: final dos vencedores 15, final dos perdedores 29, grande final 30, reset 31.
