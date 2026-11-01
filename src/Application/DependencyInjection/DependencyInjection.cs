@@ -56,6 +56,7 @@ public static class DependencyInjection
         services.AddScoped<ICorrigirPlacarHandler, CorrigirPlacarHandler>();
         services.AddScoped<ICancelarPartidaHandler, CancelarPartidaHandler>();
         services.AddScoped<IReabrirPartidaHandler, ReabrirPartidaHandler>();
+        services.AddScoped<IConverterEmWoHandler, ConverterEmWoHandler>();
 
         return services;
     }

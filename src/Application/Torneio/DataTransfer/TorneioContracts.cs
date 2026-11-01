@@ -35,7 +35,8 @@ public sealed record PartidaResponse(
     string Status,
     DateTime? ScheduledAt,
     ScoreResponse? Score,
-    string? WinnerTeamId)
+    string? WinnerTeamId,
+    bool Walkover)
 {
     public static PartidaResponse From(Partida partida, int quantidadePartidas)
     {
@@ -51,7 +52,8 @@ public sealed record PartidaResponse(
             partida.StatusApi(),
             partida.AgendadaEm,
             partida.PlacarA is int a && partida.PlacarB is int b ? new ScoreResponse(a, b) : null,
-            partida.VencedorDuplaId?.ToString());
+            partida.VencedorDuplaId?.ToString(),
+            partida.Wo);
     }
 
     private static SlotResponse Slot(Partida partida, bool slotA)

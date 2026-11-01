@@ -50,7 +50,7 @@ public sealed class PartidaDomainService(
         return jogo;
     }
 
-    public async Task<Partida> RegistrarResultadoAsync(Guid torneioId, int numero, Guid vencedorDuplaId, int? placarA, int? placarB, CancellationToken cancellationToken = default)
+    public async Task<Partida> RegistrarResultadoAsync(Guid torneioId, int numero, Guid vencedorDuplaId, int? placarA, int? placarB, bool wo = false, CancellationToken cancellationToken = default)
     {
         await GarantirTorneioAsync(torneioId, editavel: true, cancellationToken);
         var (jogos, times) = await CarregarAsync(torneioId, cancellationToken);
@@ -61,7 +61,12 @@ public sealed class PartidaDomainService(
             throw new BusinessException(DomainMessages.Partida.DuplaNaoJoga);
         }
 
-        if (placarA is int valorA && placarB is int valorB)
+        if (wo)
+        {
+            placarA = null;
+            placarB = null;
+        }
+        else if (placarA is int valorA && placarB is int valorB)
         {
             ProgressaoChave.ValidarPlacar(valorA, valorB, vencedorDuplaId == a.Id, numero);
         }
@@ -70,7 +75,7 @@ public sealed class PartidaDomainService(
             throw new BusinessException(string.Format(DomainMessages.Partida.PlacarInvalido, numero));
         }
 
-        jogo.RegistrarResultado(vencedorDuplaId, placarA, placarB);
+        jogo.RegistrarResultado(vencedorDuplaId, placarA, placarB, wo);
         ProgressaoChave.Sincronizar(jogos, times);
         return jogo;
     }
@@ -93,6 +98,15 @@ public sealed class PartidaDomainService(
 
         ProgressaoChave.ValidarPlacar(placarA, placarB, jogo.VencedorDuplaId == a.Id, numero);
         jogo.CorrigirPlacar(placarA, placarB);
+        return jogo;
+    }
+
+    public async Task<Partida> ConverterEmWoAsync(Guid torneioId, int numero, CancellationToken cancellationToken = default)
+    {
+        await GarantirTorneioAsync(torneioId, editavel: true, cancellationToken);
+        var (jogos, _) = await CarregarAsync(torneioId, cancellationToken);
+        var jogo = ObterJogo(jogos, numero);
+        jogo.ConverterEmWo();
         return jogo;
     }
 

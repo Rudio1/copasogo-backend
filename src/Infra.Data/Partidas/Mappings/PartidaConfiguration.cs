@@ -30,6 +30,7 @@ public sealed class PartidaConfiguration : IEntityTypeConfiguration<Partida>
         builder.Property(partida => partida.PlacarA).HasColumnName("placar_a");
         builder.Property(partida => partida.PlacarB).HasColumnName("placar_b");
         builder.Property(partida => partida.VencedorDuplaId).HasColumnName("vencedor_dupla_id");
+        builder.Property(partida => partida.Wo).HasColumnName("wo");
         builder.HasIndex(partida => new { partida.TorneioId, partida.Numero }).IsUnique().HasFilter("[is_deleted] = 0");
         builder.HasOne<TorneioEntity>().WithMany().HasForeignKey(partida => partida.TorneioId).OnDelete(DeleteBehavior.Restrict);
         builder.HasOne<Dupla>().WithMany().HasForeignKey(partida => partida.SlotADuplaId).OnDelete(DeleteBehavior.Restrict);

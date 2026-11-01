@@ -72,7 +72,7 @@ public sealed class MarcarAoVivoHandler(IPartidaDomainService partidas, ITorneio
     }
 }
 
-public sealed record RegistrarResultadoCommand(Guid TorneioId, int Numero, Guid WinnerTeamId, int? ScoreA, int? ScoreB);
+public sealed record RegistrarResultadoCommand(Guid TorneioId, int Numero, Guid WinnerTeamId, int? ScoreA, int? ScoreB, bool Walkover = false);
 
 public interface IRegistrarResultadoHandler
 {
@@ -101,7 +101,7 @@ public sealed class RegistrarResultadoHandler(
     {
         await validator.ValidateAndThrowAsync(command, cancellationToken);
         var quantidade = await PartidaResposta.Quantidade(torneios, command.TorneioId, cancellationToken);
-        var partida = await partidas.RegistrarResultadoAsync(command.TorneioId, command.Numero, command.WinnerTeamId, command.ScoreA, command.ScoreB, cancellationToken);
+        var partida = await partidas.RegistrarResultadoAsync(command.TorneioId, command.Numero, command.WinnerTeamId, command.ScoreA, command.ScoreB, command.Walkover, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
         return PartidaResponse.From(partida, quantidade);
     }
@@ -152,6 +152,22 @@ public sealed class CancelarPartidaHandler(IPartidaDomainService partidas, ITorn
     {
         var quantidade = await PartidaResposta.Quantidade(torneios, torneioId, cancellationToken);
         var partida = await partidas.CancelarAsync(torneioId, numero, cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+        return PartidaResponse.From(partida, quantidade);
+    }
+}
+
+public interface IConverterEmWoHandler
+{
+    Task<PartidaResponse> HandleAsync(Guid torneioId, int numero, CancellationToken cancellationToken = default);
+}
+
+public sealed class ConverterEmWoHandler(IPartidaDomainService partidas, ITorneioRepository torneios, IUnitOfWork unitOfWork) : IConverterEmWoHandler
+{
+    public async Task<PartidaResponse> HandleAsync(Guid torneioId, int numero, CancellationToken cancellationToken = default)
+    {
+        var quantidade = await PartidaResposta.Quantidade(torneios, torneioId, cancellationToken);
+        var partida = await partidas.ConverterEmWoAsync(torneioId, numero, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
         return PartidaResponse.From(partida, quantidade);
     }

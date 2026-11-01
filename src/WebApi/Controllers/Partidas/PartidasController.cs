@@ -15,7 +15,8 @@ public sealed class PartidasController(
     IRegistrarResultadoHandler resultado,
     ICorrigirPlacarHandler placar,
     ICancelarPartidaHandler cancelar,
-    IReabrirPartidaHandler reabrir) : ApiControllerBase
+    IReabrirPartidaHandler reabrir,
+    IConverterEmWoHandler wo) : ApiControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> Listar(Guid torneioId, [FromQuery] string? roundId, [FromQuery] string? status, [FromQuery] string? side, CancellationToken cancellationToken) =>
@@ -39,13 +40,18 @@ public sealed class PartidasController(
     [HttpPost("{numero:int}/resultado")]
     public async Task<IActionResult> Resultado(Guid torneioId, int numero, [FromBody] ResultadoBody body, CancellationToken cancellationToken) =>
         OkResponse(await resultado.HandleAsync(
-            new RegistrarResultadoCommand(torneioId, numero, body.WinnerTeamId, body.Score?.A, body.Score?.B),
+            new RegistrarResultadoCommand(torneioId, numero, body.WinnerTeamId, body.Score?.A, body.Score?.B, body.Walkover ?? false),
             cancellationToken));
 
     [Authorize(Roles = AuthRoles.Administrador)]
     [HttpPost("{numero:int}/placar")]
     public async Task<IActionResult> Placar(Guid torneioId, int numero, [FromBody] ScoreBody body, CancellationToken cancellationToken) =>
         OkResponse(await placar.HandleAsync(new CorrigirPlacarCommand(torneioId, numero, body.A, body.B), cancellationToken));
+
+    [Authorize(Roles = AuthRoles.Administrador)]
+    [HttpPost("{numero:int}/wo")]
+    public async Task<IActionResult> Wo(Guid torneioId, int numero, CancellationToken cancellationToken) =>
+        OkResponse(await wo.HandleAsync(torneioId, numero, cancellationToken));
 
     [Authorize(Roles = AuthRoles.Administrador)]
     [HttpPost("{numero:int}/cancelar")]
@@ -59,5 +65,5 @@ public sealed class PartidasController(
 
     public sealed record AgendarBody(DateTime? ScheduledAt);
     public sealed record ScoreBody(int A, int B);
-    public sealed record ResultadoBody(Guid WinnerTeamId, ScoreBody? Score);
+    public sealed record ResultadoBody(Guid WinnerTeamId, ScoreBody? Score, bool? Walkover);
 }

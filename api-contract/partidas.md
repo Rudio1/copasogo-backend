@@ -59,6 +59,19 @@ JWT. So em `upcoming` ou `live`. `winnerTeamId` tem de ser um dos participantes 
 
 `score` e opcional, mas se vier precisa dos dois lados e o vencedor com placar estritamente maior. Depois do resultado a chave sincroniza: avanca vencedor/perdedor, abre o reset (31) ou o cancela se o campeao dos vencedores ganhou o 30. Duas derrotas eliminam a dupla.
 
+W.O.: mande `"walkover": true`. O `score` e ignorado e a partida fica sem placar. Aceita `upcoming` ou `live` (a dupla ausente nao precisa ter entrado). A partida conta como derrota normal para quem nao compareceu. A resposta traz `walkover: true`. `POST .../placar` num jogo de W.O. lanca o placar e desfaz o W.O.
+
+```json
+{
+  "winnerTeamId": "guid",
+  "walkover": true
+}
+```
+
+## POST .../{numero}/wo
+
+JWT. Sem body. Transforma o resultado de um jogo `completed` em W.O.: o vencedor continua o mesmo, o placar e apagado e `walkover` vira `true`. A chave nao muda. Para desfazer, lance o placar em `POST .../placar`: isso volta `walkover` para `false`.
+
 ## POST .../{numero}/cancelar
 
 JWT. Sem body. Nao cancela jogo `completed`.

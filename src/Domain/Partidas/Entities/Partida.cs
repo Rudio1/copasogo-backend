@@ -44,6 +44,8 @@ public sealed class Partida : AggregateRoot
 
     public Guid? VencedorDuplaId { get; private set; }
 
+    public bool Wo { get; private set; }
+
     public static Partida Criar(
         Guid torneioId,
         int numero,
@@ -89,9 +91,11 @@ public sealed class Partida : AggregateRoot
         MarkAsUpdated();
     }
 
-    public void RegistrarResultado(Guid vencedorDuplaId, int? placarA, int? placarB)
+    public void RegistrarResultado(Guid vencedorDuplaId, int? placarA, int? placarB, bool wo = false)
     {
-        if (Status != StatusPartida.Live)
+        // W.O. pode ser lançado antes do jogo começar: a dupla ausente nem chega a jogar.
+        var aceita = Status == StatusPartida.Live || (wo && Status == StatusPartida.Upcoming);
+        if (!aceita)
         {
             throw new BusinessException(
                 Status == StatusPartida.Upcoming
@@ -100,8 +104,9 @@ public sealed class Partida : AggregateRoot
         }
 
         VencedorDuplaId = vencedorDuplaId;
-        PlacarA = placarA;
-        PlacarB = placarB;
+        PlacarA = wo ? null : placarA;
+        PlacarB = wo ? null : placarB;
+        Wo = wo;
         Status = StatusPartida.Completed;
         MarkAsUpdated();
     }
@@ -113,8 +118,24 @@ public sealed class Partida : AggregateRoot
             throw new BusinessException(string.Format(DomainMessages.Partida.PlacarSoEncerrada, Numero));
         }
 
+        // Lançar placar num jogo de W.O. desfaz o W.O.: o vencedor continua o mesmo.
         PlacarA = placarA;
         PlacarB = placarB;
+        Wo = false;
+        MarkAsUpdated();
+    }
+
+    // Troca o resultado de um jogo encerrado por W.O. O vencedor não muda, então a chave também não.
+    public void ConverterEmWo()
+    {
+        if (Status != StatusPartida.Completed || VencedorDuplaId is null)
+        {
+            throw new BusinessException(string.Format(DomainMessages.Partida.WoSoEncerrada, Numero));
+        }
+
+        PlacarA = null;
+        PlacarB = null;
+        Wo = true;
         MarkAsUpdated();
     }
 

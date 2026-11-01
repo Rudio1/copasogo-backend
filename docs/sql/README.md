@@ -22,6 +22,7 @@ IF DB_ID(N'copasogo') IS NULL
 7. `007_torneio_quantidade_partidas.sql` — tamanho da chave da edicao
 8. `008_jogador_steam_id.sql` — steam_id aceita link ou identificador personalizado
 9. `009_perdedores_rodada2_invertida.sql` — rodada 2 dos perdedores recebe as quartas invertidas (corrige edicoes ja criadas)
+10. `010_partida_wo.sql` — coluna `wo` para vitoria por W.O.
 
 Cada script e idempotente (`IF OBJECT_ID` / `IF NOT EXISTS`). Pode rodar de novo sem dropar o que ja existe.
 
